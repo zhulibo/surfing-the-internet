@@ -1,0 +1,44 @@
+* {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+:root {
+  --font-size: 16px;
+  --line-height: 1.4;
+}
+html,body {
+  height: 100%;
+}
+body {
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  color: #222;
+}
+a {
+  color: inherit;
+  outline: none;
+  text-decoration: none;
+}
+h1, h2, h3, h4, h5, h6 {
+  color: inherit;
+  font: inherit;
+}
+input, button, select, textarea {
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  outline: none; /* 去掉chrome获得焦点时的虚线框 */
+  border: 1px solid #ccc;
+}
+select, button{
+  box-sizing: content-box;
+  height: calc(var(--font-size) * var(--line-height));
+}
+button{
+  vertical-align: baseline;
+}
+img {
+  vertical-align: bottom;
+}
