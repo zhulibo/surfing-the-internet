@@ -26,7 +26,7 @@ chrome.storage.local.get(['time', 'blackList'], res => {
 
   if (res.blackList.some(item => location.href.includes(item))) return
 
-  loadStyle('body{filter: brightness(80%);}')
+  loadStyle('html{filter: brightness(80%);}')
 })
 
 // 监听黑名单变化
