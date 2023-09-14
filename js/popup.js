@@ -1,16 +1,52 @@
+const defaultStyle = 85
+const defaultTime = {
+  startTime: '18:00',
+  endTime: '08:00'
+}
 const defaultList = [
   'google.com',
   'youtube.com',
   'reddit.com',
-  'bilibili.com',
+  'twitch.tv',
   'gamersky.com',
   'ithome.com',
 ]
+
 let blackList = []
+
 // chrome.storage.local.clear()
 
+// 初始style
+chrome.storage.local.get('style', res => {
+  if (!res.style) {
+    chrome.storage.local.set({
+      style: 85
+    })
+    document.getElementById("style-input").value = defaultStyle
+  }
+  else {
+    document.getElementById("style-input").value = res.style
+  }
+})
+
+// 保存style
+document.querySelector('#style-add').onclick = () => {
+  const styleInput = document.getElementById("style-input");
+  const style = styleInput.value.trim()
+
+  if (style < 0 || style > 100) {
+    return alert('brightness must be between 0 and 100')
+  }
+
+  chrome.storage.local.set({
+    style
+  })
+}
+
+// 初始time
 chrome.storage.local.get('time', res => {
-  // 初始化赋值time
+  console.log(res.time)
+
   if (!res.time) {
     chrome.storage.local.set({
       time: {
@@ -18,12 +54,45 @@ chrome.storage.local.get('time', res => {
         endTime: '08:00'
       }
     })
+    const [hourStart, minuteStart] = defaultTime.startTime.split(':')
+    const [hourEnd, minuteEnd] = defaultTime.endTime.split(':')
+
+    document.querySelector('#hour-start').value = hourStart
+    document.querySelector('#minute-start').value = minuteStart
+    document.querySelector('#hour-end').value = hourEnd
+    document.querySelector('#minute-end').value = minuteEnd
+  }
+  else {
+    const {startTime, endTime} = res.time
+    const [hourStart, minuteStart] = startTime.split(':')
+    const [hourEnd, minuteEnd] = endTime.split(':')
+
+    document.querySelector('#hour-start').value = hourStart
+    document.querySelector('#minute-start').value = minuteStart
+    document.querySelector('#hour-end').value = hourEnd
+    document.querySelector('#minute-end').value = minuteEnd
   }
 })
 
-// 获取黑名单
+// 保存time
+document.querySelector('#save-time').onclick = () => {
+  const hourStart = document.querySelector('#hour-start').value
+  const minuteStart = document.querySelector('#minute-start').value
+  const hourEnd = document.querySelector('#hour-end').value
+  const minuteEnd = document.querySelector('#minute-end').value
+
+  const startTime = `${hourStart}:${minuteStart}`
+  const endTime = `${hourEnd}:${minuteEnd}`
+  chrome.storage.local.set({
+    time: {
+      startTime,
+      endTime
+    }
+  })
+}
+
+// 初始赋值blackList
 chrome.storage.local.get('blackList', res => {
-  // 初始化赋值blackList
   if (!res.blackList) {
     blackList = defaultList
     chrome.storage.local.set({blackList}, () => {

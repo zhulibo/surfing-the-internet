@@ -1,3 +1,9 @@
+const defaultStyle = 85
+const defaultTime = {
+  startTime: '18:00',
+  endTime: '08:00'
+}
+
 function loadStyle(css) {
   const style = document.createElement('style');
   style.appendChild(document.createTextNode(css));
@@ -5,11 +11,12 @@ function loadStyle(css) {
 }
 
 // 添加样式
-chrome.storage.local.get(['time', 'blackList'], res => {
+chrome.storage.local.get(['style', 'time', 'blackList'], res => {
   console.log(res)
-  if (!res.time) return
-  const startTime = res.time.startTime?? '18:00'
-  const endTime = res.time.endTime?? '08:00'
+
+  const style = res.style ?? defaultStyle
+  const startTime = res.time?.startTime ?? defaultTime.startTime
+  const endTime = res.time?.endTime ?? defaultTime.endTime
 
   const now = new Date()
   const numNow = now.getHours() * 60 +  now.getMinutes() // 今日已过分钟数
@@ -24,9 +31,9 @@ chrome.storage.local.get(['time', 'blackList'], res => {
   if (numStart < numEnd && (numNow < numStart || numNow > numEnd)) return
   if (numStart > numEnd && (numNow < numStart && numNow > numEnd)) return
 
-  if (res.blackList.some(item => location.href.includes(item))) return
+  if (res.blackList?.some(item => location.href.includes(item))) return
 
-  loadStyle('html{filter: brightness(80%);}')
+  loadStyle(`html{filter: brightness(${style}%);}`)
 })
 
 // 监听黑名单变化
