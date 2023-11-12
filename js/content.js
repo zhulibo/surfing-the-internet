@@ -1,40 +1,39 @@
 const defaultStyle = 85
 const defaultTime = {
-  startTime: '18:00',
+  startTime: '17:00',
   endTime: '08:00'
 }
 
-function loadStyle(css) {
-  const style = document.createElement('style');
-  style.appendChild(document.createTextNode(css));
-  document.head.appendChild(style);
+const addStyle = () => {
+  // 添加样式
+  chrome.storage.local.get(['style', 'time', 'blackList'], res => {
+
+    if (res.blackList?.some(item => location.href.includes(item))) return
+    console.log(res)
+
+    const style = res.style ?? defaultStyle
+    const startTime = res.time?.startTime ?? defaultTime.startTime
+    const endTime = res.time?.endTime ?? defaultTime.endTime
+
+    const now = new Date()
+    const numNow = now.getHours() * 60 +  now.getMinutes() // 今日已过分钟数
+
+    const [hourStart, minuteStart] = startTime.split(':')
+    const numStart = hourStart * 60 +  Number(minuteStart)
+
+    const [hourEnd, minuteEnd] = endTime.split(':')
+    const numEnd = hourEnd * 60 +  Number(minuteEnd)
+
+    // 判断是否在时间段内
+    if (numStart < numEnd && (numNow < numStart || numNow > numEnd)) return
+    if (numStart > numEnd && (numNow < numStart && numNow > numEnd)) return
+
+    document.getElementsByTagName('html')[0].style.filter = `brightness(${style}%)`
+  })
 }
 
-// 添加样式
-chrome.storage.local.get(['style', 'time', 'blackList'], res => {
-  console.log(res)
-
-  const style = res.style ?? defaultStyle
-  const startTime = res.time?.startTime ?? defaultTime.startTime
-  const endTime = res.time?.endTime ?? defaultTime.endTime
-
-  const now = new Date()
-  const numNow = now.getHours() * 60 +  now.getMinutes() // 今日已过分钟数
-
-  const [hourStart, minuteStart] = startTime.split(':')
-  const numStart = hourStart * 60 +  Number(minuteStart)
-
-  const [hourEnd, minuteEnd] = endTime.split(':')
-  const numEnd = hourEnd * 60 +  Number(minuteEnd)
-
-  // 判断是否在时间段内
-  if (numStart < numEnd && (numNow < numStart || numNow > numEnd)) return
-  if (numStart > numEnd && (numNow < numStart && numNow > numEnd)) return
-
-  if (res.blackList?.some(item => location.href.includes(item))) return
-
-  loadStyle(`html{filter: brightness(${style}%);}`)
-})
+addStyle()
+setInterval(addStyle, 600000)
 
 // 监听黑名单变化
 chrome.storage.onChanged.addListener(function(a, b){
@@ -45,7 +44,7 @@ chrome.storage.onChanged.addListener(function(a, b){
 // chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 //   console.log(request)
 //   if(request === 'loadStyle') {
-//     loadStyle('body{filter: brightness(80%);}')
+//     // do something
 //     sendResponse('已执行')
 //   }
 // })

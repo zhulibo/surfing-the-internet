@@ -1,6 +1,6 @@
 const defaultStyle = 85
 const defaultTime = {
-  startTime: '18:00',
+  startTime: '17:00',
   endTime: '08:00'
 }
 const defaultList = [
@@ -50,8 +50,8 @@ chrome.storage.local.get('time', res => {
   if (!res.time) {
     chrome.storage.local.set({
       time: {
-        startTime: '18:00',
-        endTime: '08:00'
+        startTime: defaultTime.startTime,
+        endTime: defaultTime.endTime
       }
     })
     const [hourStart, minuteStart] = defaultTime.startTime.split(':')
